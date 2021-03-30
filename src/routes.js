@@ -1,13 +1,19 @@
 const express = require('express');
-const path = require('path');
 
 const routes = express.Router();
 
-const basePath = path.resolve(__dirname, 'views');
+const profile = {
+    name: "Jakeliny",
+    avatar: "https://avatars.githubusercontent.com/u/17316392?s=460&u=6912a91a70bc89745a2079fdcdad3bc3ce370f13&v=4",
+    "monthly-budget": 3000,
+    "hours-per-day": 5,
+    "days-per-week": 5,
+    "vacation-per-year": 4
+}
 
-routes.get("/", (request, response) => response.sendFile(path.resolve(basePath, 'index.html')));
-routes.get("/job", (request, response) => response.sendFile(path.resolve(basePath, 'job.html')));
-routes.get("/job/edit", (request, response) => response.sendFile(path.resolve(basePath, 'job-edit.html')));
-routes.get("/profile", (request, response) => response.sendFile(path.resolve(basePath, 'profile.html')));
+routes.get("/", (req, res) => res.render('index'));
+routes.get("/job", (req, res) => res.render('job'));
+routes.get("/job/edit", (req, res) => res.render('job-edit'));
+routes.get("/profile", (req, res) => res.render('profile', {profile}));
 
 module.exports = routes;
