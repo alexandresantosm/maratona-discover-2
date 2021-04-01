@@ -9,6 +9,8 @@ const basePath = path.resolve(__dirname, 'views') + '\\';
 server.set('view engine', 'ejs');
 server.set('views', basePath);
 
+server.use(express.urlencoded({ extended: true }));
+
 server.use(express.static("public"));
 
 server.use(routes);
