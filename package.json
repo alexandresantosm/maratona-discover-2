@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Freelance Calculator",
   "main": "src/server.js",
+  "nodemonConfig": {
+    "ignore": ["node_module/*.js"]
+  },
   "scripts": {
     "dev": "nodemon ."
   },
