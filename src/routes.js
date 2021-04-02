@@ -2,41 +2,8 @@ const express = require('express');
 
 const routes = express.Router();
 
-const Profile = {
-    data: {
-        name: "Jakeliny",
-        avatar: "https://github.com/jakeliny.png",
-        "monthly-budget": 3000,
-        "hours-per-day": 5,
-        "days-per-week": 5,
-        "vacation-per-year": 4,
-        "value-hour": 75,
-    },
-
-    controllers: {
-        index(req, res) {
-            return res.render('profile', { profile: Profile.data });
-        },
-
-        update(req, res) {
-            const data = req.body;
-            const weeksPerYear = 52;
-            const weeksPerMonth = (weeksPerYear - data["vacation-per-year"]) / 12;
-            const weekTotalHours = data["hours-per-day"] * data["days-per-week"];
-            const monthlyTotlaHours = weekTotalHours * weeksPerMonth;
-            const valueHour = data["monthly-budget"] /monthlyTotlaHours;
-
-            Profile.data = {
-                ...Profile.data,
-                ...req.body,
-                "value-hour": valueHour,
-            };
-
-            return res.redirect('/profile');
-        },
-    }
-
-};
+const ProfileController = require('./controllers/ProfileController');
+const Profile = require('./model/Profile');
 
 const Job = {
     data: [
@@ -58,23 +25,22 @@ const Job = {
 
     controllers: {
         index(req, res) {
-            {
-                const updatedJobs = Job.data.map((job) => {
-                    
-                    const remaining = Job.services.calculateRemainingDays(job);
-                    const status = remaining <= 0 ? 'done' : 'progress';
-                    const budget = Job.services.calculateBudget(job, Profile.data["value-hour"]);
-            
-                    return {
-                        ...job,
-                        remaining,
-                        status,
-                        budget,
-                    };
-                });
+            const updatedJobs = Job.data.map((job) => {
                 
-                return res.render('index', { jobs: updatedJobs });
-            }
+                const remaining = Job.services.calculateRemainingDays(job);
+                const status = remaining <= 0 ? 'done' : 'progress';
+                const profile = Profile.get();
+                const budget = Job.services.calculateBudget(job, profile["value-hour"]);
+        
+                return {
+                    ...job,
+                    remaining,
+                    status,
+                    budget,
+                };
+            });
+            
+            return res.render('index', { jobs: updatedJobs });
         },
 
         create(req, res) {
@@ -179,8 +145,8 @@ routes.post("/job/:id", Job.controllers.update);
 
 routes.post("/job/delete/:id", Job.controllers.delete);
 
-routes.get("/profile", Profile.controllers.index);
+routes.get("/profile", ProfileController.index);
 
-routes.post("/profile", Profile.controllers.update);
+routes.post("/profile", ProfileController.update);
 
 module.exports = routes;
